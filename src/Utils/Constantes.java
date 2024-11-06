@@ -16,5 +16,10 @@ public class Constantes implements Serializable {
     public static final int TAMANIO_INT = Integer.BYTES;
     public static final int VALOR_POR_DEFECTO_INT = -1;
     public static final boolean VALOR_POR_DEFECTO_BOOLEAN = false;
+    public static final int PRODUCCION_OVEJAS = 5;
+    public static final int PRODUCCION_GALLINAS_NUEVAS = 2;
+    public static final int PRODUCCION_GALLINAS_VIEJAS = 1;
+    public static final int DIAS_MIN_GALLINAS_NUEVAS = 3;
+    public static final int DIAS_MAX_GALLINAS_NUEVAS = 40;
 
 }
