@@ -96,6 +96,11 @@ public class Main {
     public static void main(String[] args) {
 
         g = Granja.getInstance();
-        menuPartida();
+        g.getEstablo().cargarEstablo();
+        g.getEstablo().mostrarAnimales();
+        g.getEstablo().mostrarAlimentos();
+        g.getEstablo().mostrarProductos();
+        //menuPartida();
+
     }
 }

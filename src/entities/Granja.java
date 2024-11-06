@@ -4,6 +4,11 @@ import Ficheros.Guardado;
 import Ficheros.HuertoDAT;
 import Ficheros.XML;
 import Utils.Pedir;
+import entities.animales.Establo;
+import entities.huerto.Almacen;
+import entities.huerto.Estacion;
+import entities.huerto.Semilla;
+import entities.huerto.Tienda;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
@@ -28,6 +33,7 @@ public class Granja implements Serializable {
     private  HashMap<Estacion, ArrayList<Semilla>> semillasPorEstacion;
     private  HashMap<Integer, Semilla> semillasPorId;
     private  Semilla semillaComprada;
+    private Establo e;
     private static Granja instance; //si un atributo es estatico, ya es transient por definicion
 
     private Granja() {
@@ -44,6 +50,7 @@ public class Granja implements Serializable {
         this.semillasDisponibles = XML.getSemillas(doc);
         this.semillasPorEstacion = XML.getSemillasEstacion(doc);
         this.semillasPorId = XML.getSemillasId(doc);
+        this.e=Establo.getInstance();
 
     }
 
@@ -125,6 +132,10 @@ public class Granja implements Serializable {
 
     public void setFilasHuerto(int filasHuerto) {
         this.filasHuerto = filasHuerto;
+    }
+
+    public Establo getEstablo() {
+        return e;
     }
 
     public int getColumnasHuerto() {

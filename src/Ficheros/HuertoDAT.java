@@ -2,7 +2,7 @@ package Ficheros;
 
 import Utils.Constantes;
 import entities.Granja;
-import entities.Semilla;
+import entities.huerto.Semilla;
 
 import java.io.File;
 import java.io.FileNotFoundException;

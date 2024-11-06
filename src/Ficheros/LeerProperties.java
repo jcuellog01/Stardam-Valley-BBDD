@@ -2,7 +2,7 @@ package Ficheros;
 
 import Utils.Constantes;
 import Utils.Pedir;
-import entities.Estacion;
+import entities.huerto.Estacion;
 import entities.Granja;
 
 import java.io.*;

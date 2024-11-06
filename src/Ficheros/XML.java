@@ -1,7 +1,7 @@
 package Ficheros;
 import Utils.Constantes;
-import entities.Estacion;
-import entities.Semilla;
+import entities.huerto.Estacion;
+import entities.huerto.Semilla;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

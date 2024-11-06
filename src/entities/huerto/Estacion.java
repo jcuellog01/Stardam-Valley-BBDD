@@ -1,4 +1,4 @@
-package entities;
+package entities.huerto;
 
 import java.io.Serializable;
 
