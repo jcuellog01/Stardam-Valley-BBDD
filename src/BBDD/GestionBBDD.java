@@ -7,14 +7,14 @@ import java.util.ArrayList;
 
 public class GestionBBDD {
 
-     static GestionBBDD instance;
-     Connection connection;
+     private static GestionBBDD instance;
+     private Connection connection;
 
      GestionBBDD() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            String url = "jdbc:mysql://127.0.0.1:2000/StardamValley";
+            String url = "jdbc:mysql://localhost:2000/StardamValley";
             connection = DriverManager.getConnection(url, "root", "triana123");
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Error al definir el driver");
@@ -51,18 +51,17 @@ public class GestionBBDD {
 
         } catch (SQLException e) {
             System.out.println("Error SQL al ejecutar la consulta: " + e.getMessage());
-            e.printStackTrace(); // Imprimir stack trace completo
             return null;
 
         } catch (Exception e) {
             System.out.println("Error general al ejecutar la consulta: " + e.getMessage());
-            e.printStackTrace();
+
             return null;
 
         }
     }
 
-    public ArrayList<Animal> getAnimales(ResultSet resultado, ArrayList<Alimento> alimentos, ArrayList<Producto> productos) {
+    public ArrayList<Animal> getAnimales(ResultSet resultado) {
         ArrayList<Animal> animales = new ArrayList<>();
          int id;
          String nombre;
@@ -70,6 +69,8 @@ public class GestionBBDD {
          Tipo tipo;
          Alimento alimento;
          Producto producto;
+         ResultSet setAlimentos;
+         ResultSet setProductos;
 
         if (resultado == null) {
             System.out.println("El ResultSet es null");
@@ -83,8 +84,7 @@ public class GestionBBDD {
                 tipo = Tipo.valueOf(resultado.getString("tipo"));
                 float peso = resultado.getFloat("peso");
                 diaInsercion = new Timestamp(resultado.getLong("dia_insercion"));
-                alimento = Establo.getInstance().getAlimentoId(resultado.getInt("id_alimento"));
-                producto = Establo.getInstance().getProductoId(resultado.getInt("id_producto"));
+                Alimento a = setAlimentos.getObject("Maiz");
 
                 Animal animal;
                 switch (tipo) {
@@ -111,62 +111,6 @@ public class GestionBBDD {
 
         System.out.println("Número de animales cargados: " + animales.size());
         return animales;
-    }
-
-    public ArrayList<Producto> getProductos(ResultSet resultado) {
-        ArrayList<Producto> productos = new ArrayList<>();
-        int id;
-        String nombre;
-        float precio;
-        int cantidadDisponible;
-
-        if (resultado == null) {
-            System.out.println("El ResultSet es null");
-            return productos;
-        }
-
-        try {
-            while (resultado.next()) {
-                id = resultado.getInt("id");
-                nombre = resultado.getString("nombre");
-                precio=resultado.getFloat("precio");
-                cantidadDisponible=resultado.getInt("cantidad_disponible");
-                productos.add(new Producto(id, nombre, precio,cantidadDisponible));
-            }
-        } catch (SQLException e) {
-            System.out.println("Error al procesar el ResultSet: " + e.getMessage());
-        }
-
-        System.out.println("Número de productos cargados: " + productos.size());
-        return productos;
-    }
-
-    public ArrayList<Alimento> getAlimentos(ResultSet resultado) {
-        ArrayList<Alimento> alimentos = new ArrayList<>();
-        int id;
-        String nombre;
-        float precio;
-        int cantidadDisponible;
-
-        if (resultado == null) {
-            System.out.println("El ResultSet es null");
-            return alimentos;
-        }
-
-        try {
-            while (resultado.next()) {
-                id = resultado.getInt("id");
-                nombre = resultado.getString("nombre");
-                precio=resultado.getFloat("precio");
-                cantidadDisponible=resultado.getInt("cantidad_disponible");
-                alimentos.add(new Alimento(id, nombre, precio,cantidadDisponible));
-            }
-        } catch (SQLException e) {
-            System.out.println("Error al procesar el ResultSet: " + e.getMessage());
-        }
-
-        System.out.println("Número de alimentos cargados: " + alimentos.size());
-        return alimentos;
     }
 
     public void cerrarConexion() {

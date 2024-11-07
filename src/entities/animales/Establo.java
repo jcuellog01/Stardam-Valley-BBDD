@@ -6,25 +6,23 @@ import java.util.ArrayList;
 
 public class Establo {
     private ArrayList<Animal> animales;
-    private ArrayList<Producto> productos;
-    private ArrayList<Alimento> alimentos;
     private static Establo instance;
 
     private Establo() {
         animales = new ArrayList<>();
-        productos = new ArrayList<>();
-        alimentos = new ArrayList<>();
     }
 
     public void cargarEstablo() {
 
         GestionBBDD g = GestionBBDD.getInstance();
-        cargarAlimentos(g);
-        cargarProductos(g);
         cargarAnimales(g);
 
         g.cerrarConexion();
 
+
+    }
+
+    public void alimentar(){
 
     }
 
@@ -35,29 +33,14 @@ public class Establo {
         return instance;
     }
 
-    public void cargarAlimentos(GestionBBDD g){
-        g = GestionBBDD.getInstance();
-
-        this.alimentos.addAll(g.getAlimentos(g.select("SELECT * FROM Alimentos")));
-
-    }
-
-    public void cargarProductos(GestionBBDD g){
-        g = GestionBBDD.getInstance();
-
-        this.productos.addAll(g.getProductos(g.select("SELECT * FROM Productos")));
-
-    }
-
     public void cargarAnimales(GestionBBDD g) {
 
-        g = GestionBBDD.getInstance();
-
-        this.animales.addAll(g.getAnimales(g.select("SELECT * FROM Animales;"),this.alimentos,this.productos));
+        this.animales.addAll(g.getAnimales(g.select("SELECT * FROM Animales;")));
 
     }
 
     public Alimento getAlimentoId(int id){
+        Alimento alimento = g.;
         for(Alimento a: this.alimentos){
             if(a.getId() == id){
                 return a;
