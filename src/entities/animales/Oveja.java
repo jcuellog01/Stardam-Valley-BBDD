@@ -1,6 +1,7 @@
 package entities.animales;
 
 import Utils.Constantes;
+import entities.huerto.Tienda;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -22,15 +23,15 @@ public class Oveja extends Animal {
     }
 
     @Override
-    public ArrayList<Producto> producir(){
+    public void producir(){
         LocalDateTime ahora = LocalDateTime.now();
-        ArrayList<Producto> productos = new ArrayList<>();
+        int cantidadProducida = 0;
         if(ChronoUnit.DAYS.between(fechaEsquilado, ahora) >= 2){
-            productos = new ArrayList<>();
-            for(int i = 0; i< Constantes.PRODUCCION_OVEJAS; i++){
-                productos.add(this.getProducto());
+            cantidadProducida = Constantes.PRODUCCION_OVEJAS;
+            fechaEsquilado = ahora;
             }
+        registrarProduccion(this,cantidadProducida, Timestamp.valueOf(ahora));
         }
-        return productos;
+
     }
-}
+

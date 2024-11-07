@@ -29,13 +29,12 @@ public class Vaca extends Animal {
     }
 
     @Override
-    public ArrayList<Producto> producir() {
+    public void producir() {
         ArrayList<Producto> producidos = new ArrayList<>();
 
         for (int i = 0; i < calcularProduccion(); i++) {
             producidos.add(this.getProducto());
         }
-        return producidos;
     }
 
     public int getDiasJuego() {
@@ -75,7 +74,7 @@ public class Vaca extends Animal {
             } catch (SQLException e) {
                 System.out.println("Error al obtener cantidad disponible de un alimento");
             }
-            super.registrarConsumo(this, cantidadConsumida, Timestamp.valueOf(LocalDateTime.now()));
+            registrarProduccion(this, cantidadConsumida, Timestamp.valueOf(LocalDateTime.now()));
         }
 
     }

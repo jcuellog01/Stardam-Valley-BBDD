@@ -133,7 +133,12 @@ public abstract class Animal {
 
     }
 
-    public abstract ArrayList<Producto> producir();
+    public void registrarProduccion(Animal animal, int cantidadConsumida,Timestamp now){
+        GestionBBDD g = GestionBBDD.getInstance();
+        g.update("INSERT INTO HistorialProduccion (id_animal,cantidad_producida,fecha_produccion) values(?,?,?)",animal.getId(),cantidadConsumida,now);
+    }
+
+    public abstract void producir();
 
     @Override
     public String toString() {

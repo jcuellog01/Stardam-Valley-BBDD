@@ -1,9 +1,11 @@
 package entities.animales;
 
+import BBDD.GestionBBDD;
 import Utils.Constantes;
 import entities.huerto.Estacion;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Cerdo extends Animal {
@@ -17,28 +19,24 @@ public class Cerdo extends Animal {
     }
 
     @Override
-    public ArrayList<Producto> producir(){
-        return new ArrayList<>();
+    public void producir(){
+        return;
     }
 
-    public ArrayList<Producto> producir(Estacion estacion){
+    public void producir(Estacion estacion){
         ArrayList<Producto> productos = new ArrayList<>();
-        int max;
+        int max = 0;
         switch(estacion){
             case Primavera:
             case Verano:
                 max = (int)(Math.random()*2)+2;
-                for(int i=0;i<max;i++){
-                    productos.add(this.getProducto());
-                }
                 break;
             case Otoño:
                 max = (int)(Math.random()* 2);
-                for(int i=0;i<max;i++){
-                    productos.add(this.getProducto());
-                }
                 break;
         }
-        return productos;
+        registrarProduccion(this,max,Timestamp.valueOf(LocalDateTime.now()));
     }
+
+
 }
