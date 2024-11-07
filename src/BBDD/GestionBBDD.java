@@ -1,8 +1,10 @@
 package BBDD;
 
+import entities.TipoProducto;
 import entities.animales.*;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class GestionBBDD {
@@ -27,7 +29,7 @@ public class GestionBBDD {
         return instance;
     }
 
-    public ArrayList<Animal> obtenerAnimales(){
+    public ArrayList<Animal> obtenerAnimales() {
         ArrayList<Animal> animales = new ArrayList<>();
         int id;
         String nombre;
@@ -101,7 +103,126 @@ public class GestionBBDD {
         return animales;
     }
 
-    public int obtenerCantidadAlimento(int id){
+    public ArrayList<Producto> obtenerProductos() {
+        ArrayList<Producto> productos = new ArrayList<>();
+        int id;
+        String nombre;
+        float precio;
+        int cantidadDisponible;
+        PreparedStatement statement = null;
+        ResultSet resultado = null;
+
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Productos p;");
+            resultado = statement.executeQuery();
+
+            if (resultado == null) {
+                return null;
+            }
+            if (!resultado.isBeforeFirst()) {
+                System.out.println("La consulta no devolvió resultados");
+            } else {
+                System.out.println("Consulta ejecutada con éxito - Datos encontrados");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error SQL al ejecutar la consulta: " + e.getMessage());
+            return null;
+
+        } catch (Exception e) {
+            System.out.println("Error general al ejecutar la consulta: " + e.getMessage());
+            return null;
+        }
+
+        try {
+            while (resultado.next()) {
+                id = resultado.getInt("p.id");
+                nombre = resultado.getString("p.nombre");
+                precio = resultado.getFloat("p.peso");
+
+                productos.add(new Producto(id, nombre, precio));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al procesar el ResultSet: " + e.getMessage());
+        }
+        return productos;
+    }
+
+    public ArrayList<Alimento> obtenerAlimentos() {
+        ArrayList<Alimento> productos = new ArrayList<>();
+        int id;
+        String nombre;
+        float precio;
+        int cantidadDisponible;
+        PreparedStatement statement = null;
+        ResultSet resultado = null;
+
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Alimentos al;");
+            resultado = statement.executeQuery();
+
+            if (resultado == null) {
+                return null;
+            }
+            if (!resultado.isBeforeFirst()) {
+                System.out.println("La consulta no devolvió resultados");
+            } else {
+                System.out.println("Consulta ejecutada con éxito - Datos encontrados");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error SQL al ejecutar la consulta: " + e.getMessage());
+            return null;
+
+        } catch (Exception e) {
+            System.out.println("Error general al ejecutar la consulta: " + e.getMessage());
+            return null;
+        }
+
+        try {
+            while (resultado.next()) {
+                id = resultado.getInt("al.id");
+                nombre = resultado.getString("al.nombre");
+                precio = resultado.getFloat("al.peso");
+
+                productos.add(new Alimento(id, nombre, precio));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al procesar el ResultSet: " + e.getMessage());
+        }
+        return productos;
+    }
+
+    public int obtenerCantidadAlimento(int id) {
+
+        PreparedStatement statement = null;
+        ResultSet resultado = null;
+
+        try {
+            statement = connection.prepareStatement("SELECT cantidad_disponible FROM Alimentos WHERE id=?");
+            statement.setInt(1, id);
+            resultado = statement.executeQuery();
+
+            if (resultado.next()) {
+                return resultado.getInt("cantidad_disponible");
+
+            } else {
+                System.out.println("No se encontró alimento con id: " + id);
+                return 0;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error SQL al ejecutar la consulta: " + e.getMessage());
+            return -1;
+
+        } catch (Exception e) {
+            System.out.println("Error general al ejecutar la consulta: " + e.getMessage());
+            return -1;
+        }
+
+    }
+
+    public int obtenerCantidadProducto(int id) {
 
         ResultSet resultados;
 
@@ -109,7 +230,35 @@ public class GestionBBDD {
         ResultSet resultado = null;
 
         try {
-            statement = connection.prepareStatement("SELECT cantidad_disponible FROM Alimentos al WHERE id=?");
+            statement = connection.prepareStatement("SELECT cantidad_disponible FROM Productos p WHERE id=?");
+            statement.setInt(1, id);
+            resultado = statement.executeQuery();
+
+        } catch (SQLException e) {
+            System.out.println("Error SQL al ejecutar la consulta: " + e.getMessage());
+            return -1;
+
+        } catch (Exception e) {
+            System.out.println("Error general al ejecutar la consulta: " + e.getMessage());
+            return -1;
+        }
+        try {
+            resultado.next();
+            return resultado.getInt("p.cantidad_disponible");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public float obtenerPrecioProducto(int id) {
+
+        ResultSet resultados;
+
+        PreparedStatement statement = null;
+        ResultSet resultado = null;
+
+        try {
+            statement = connection.prepareStatement("SELECT precio FROM Productos p WHERE id=?");
             statement.setInt(1, id);
             resultado = statement.executeQuery();
 
@@ -128,20 +277,16 @@ public class GestionBBDD {
             return -1;
         }
 
-        if (resultado == null) {
-            System.out.println("El ResultSet es null");
-            return -1;
-        }
-
         try {
-            return resultado.getInt("cantidad_disponible");
+            resultado.next();
+            return resultado.getFloat("p.precio");
         } catch (SQLException e) {
             System.out.println("Error al procesar el ResultSet: " + e.getMessage());
             return -1;
         }
     }
 
-    public float obtenerPrecioAlimento(int id){
+    public float obtenerPrecioAlimento(int id) {
 
         ResultSet resultados;
 
@@ -168,12 +313,8 @@ public class GestionBBDD {
             return -1;
         }
 
-        if (resultado == null) {
-            System.out.println("El ResultSet es null");
-            return -1;
-        }
-
         try {
+            resultado.next();
             return resultado.getFloat("precio");
         } catch (SQLException e) {
             System.out.println("Error al procesar el ResultSet: " + e.getMessage());
@@ -181,17 +322,16 @@ public class GestionBBDD {
         }
     }
 
-    public int update(String query, Object... params) {
+
+    public int registrarConsumo(int idAnimal, int cantidadConsumida, Timestamp fechaConsumo) {
         PreparedStatement statement;
         int resultado;
 
         try {
-            statement = connection.prepareStatement(query);
-
-            for (int i = 0; i < params.length; i++) {
-                statement.setObject(i + 1, params[i]); // Acordarse de que el parametro es i+1 porque en vectores empieza en 0 y ej JDBC en 1
-            }
-
+            statement = connection.prepareStatement("INSERT INTO HistorialConsumo (id_animal, cantidad_consumida, fecha_consumo) VALUES (?, ?, ?)");
+            statement.setInt(1, idAnimal);
+            statement.setInt(2, cantidadConsumida);
+            statement.setTimestamp(3, fechaConsumo);
             resultado = statement.executeUpdate();
 
             return resultado;
@@ -205,12 +345,85 @@ public class GestionBBDD {
             return -1;
         }
     }
-    public int updateCantidadAlimento(int cantidad,int id) {
+
+    public int registrarProduccion(int idAnimal, int cantidadProducida, Timestamp fechaConsumo) {
+        PreparedStatement statement;
+        int resultado;
+
+        try {
+
+            statement = connection.prepareStatement("INSERT INTO HistorialProduccion (id_animal, cantidad, fecha_produccion) VALUES (?, ?, ?)");
+            statement.setInt(1, idAnimal);
+            statement.setInt(2, cantidadProducida);
+            statement.setTimestamp(3, fechaConsumo);
+            resultado = statement.executeUpdate();
+
+            return resultado;
+
+        } catch (SQLException e) {
+            System.out.println("Error SQL al ejecutar la consulta: " + e.getMessage());
+            return -1;
+
+        } catch (Exception e) {
+            System.out.println("Error general al ejecutar la consulta: " + e.getMessage());
+            return -1;
+        }
+    }
+
+
+    public int registrarTransaccion(TipoTransaccion tipoT, TipoProducto tipoP, float cantidad) {
+        PreparedStatement statement;
+        int resultado;
+
+        try {
+
+            statement = connection.prepareStatement("INSERT INTO Transacciones(tipo_transaccion, tipo_elemento, precio,fecha_transaccion) VALUES (?, ?, ?,?)");
+            statement.setString(1, tipoT.toString()); // Convierte el tipoT enum a String
+            statement.setString(2, tipoP.toString());
+            statement.setFloat(3, cantidad);
+            statement.setTimestamp(4,Timestamp.valueOf(LocalDateTime.now()));
+            resultado = statement.executeUpdate();
+
+            return resultado;
+
+        } catch (SQLException e) {
+            System.out.println("Error SQL al ejecutar la consulta: " + e.getMessage());
+            return -1;
+
+        } catch (Exception e) {
+            System.out.println("Error general al ejecutar la consulta: " + e.getMessage());
+            return -1;
+        }
+    }
+
+
+    public int updateCantidadAlimento(int cantidad, int id) {
         PreparedStatement statement;
         int resultado;
 
         try {
             statement = connection.prepareStatement("UPDATE Alimentos SET cantidad_disponible = ? WHERE id = ?;");
+            statement.setInt(1, cantidad);
+            statement.setInt(2, id);
+            resultado = statement.executeUpdate();
+            return resultado;
+
+        } catch (SQLException e) {
+            System.out.println("Error SQL al ejecutar la consulta: " + e.getMessage());
+            return -1;
+
+        } catch (Exception e) {
+            System.out.println("Error general al ejecutar la consulta: " + e.getMessage());
+            return -1;
+        }
+    }
+
+    public int updateCantidadProducto(int cantidad, int id) {
+        PreparedStatement statement;
+        int resultado;
+
+        try {
+            statement = connection.prepareStatement("UPDATE Productos SET cantidad_disponible = ? WHERE id = ?;");
             statement.setInt(1, cantidad);
             statement.setInt(2, id);
             resultado = statement.executeUpdate();

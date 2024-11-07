@@ -1,5 +1,7 @@
 package entities.animales;
 
-public enum Tipo {
+import java.io.Serializable;
+
+public enum Tipo implements Serializable {
     GALLINA, OVEJA, VACA, CERDO
 }

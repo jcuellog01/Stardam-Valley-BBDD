@@ -69,7 +69,6 @@ public class Main {
 
     public static void menuPrincipal(){
         int opc;
-
         do {
 
             mostrarMenuPrincipal();
@@ -88,15 +87,10 @@ public class Main {
                 case 3:
                     menuEstablos();
                     break;
-
                 case 4:
-
-                    g.mostrarInfo();
-                    break;
-                case 5:
                     break;
             }
-        } while (opc != 5);
+        } while (opc != 4);
         Guardado.guardar(Guardado.getOutput(),g);
     }
 

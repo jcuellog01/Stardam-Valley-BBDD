@@ -15,27 +15,23 @@ import java.util.ArrayList;
 public class Establo implements Serializable {
     private ArrayList<Animal> animales;
     private final String[] nombresProductos = {"Leche", "Huevos", "Lana", "Trufa"};
+    private final String[] nombresAlimentos = {"Maiz", "Avena", "Heno"};
     boolean alimentados;
 
     public Establo() {
         animales = new ArrayList<>();
-        cargarEstablo();
         alimentados = false;
     }
 
     public void nuevoDia() {
         for (Animal a : animales) {
             a.setAlimentado(false);
-            if (a.getTipo() == Tipo.GALLINA) {
-                ((Gallina) a).incrementarDiasInsertada();
-            }
         }
     }
 
     public void cargarEstablo() {
 
         cargarAnimales();
-
         alimentados = false;
 
     }
@@ -45,10 +41,6 @@ public class Establo implements Serializable {
         boolean todosAlimentados = true;
         for (Animal a : animales) {
 
-            if (a.getTipo() == Tipo.VACA) {
-                a = (Vaca) a;
-                a.alimentar();
-            }
             if (!a.alimentar()) {
                 todosAlimentados = false;
             }
@@ -62,71 +54,73 @@ public class Establo implements Serializable {
 
     public void producir() {
 
-        if (!alimentados) {
 
             GestionBBDD g = GestionBBDD.getInstance();
-            int cantidadLeche = 0;
-            int cantidadHuevos = 0;
-            int cantidadLana = 0;
-            int cantidadTrufa = 0;
-            cantidadLeche = g.obtenerCantidadAlimento(1);
-            cantidadLeche = g.obtenerCantidadAlimento(2);
-            cantidadLeche = g.obtenerCantidadAlimento(3);
-            cantidadLeche = g.obtenerCantidadAlimento(4);
+            int cantidadLecheDisponible =  g.obtenerCantidadProducto(1);
+            int cantidadHuevosDisponible = g.obtenerCantidadProducto(2);
+            int cantidadLanaDisponible = g.obtenerCantidadProducto(3);
+            int cantidadTrufaDisponible = g.obtenerCantidadProducto(4);
 
             for (Animal a : animales) {
 
                 a.producir();
             }
-            System.out.println("Se han producido " + (g.obtenerCantidadAlimento(1) - cantidadLeche) + " unidades de leche.");
-            System.out.println("Se han producido " + (g.obtenerCantidadAlimento(2) - cantidadHuevos) + " huevos.");
-            System.out.println("Se han producido " + (g.obtenerCantidadAlimento(3) - cantidadLana) + " unidades de Lana.");
-            System.out.println("Se han producido " + (g.obtenerCantidadAlimento(1) - cantidadTrufa) + " unidades de Trufa.");
 
-        }
+            System.out.println("Se han producido " + (g.obtenerCantidadProducto(1) -cantidadLecheDisponible) + " unidades de leche.");
+            System.out.println("Se han producido " + (g.obtenerCantidadProducto(2)-cantidadHuevosDisponible) + " huevos.");
+            System.out.println("Se han producido " + (g.obtenerCantidadProducto(3)-cantidadLanaDisponible) + " unidades de Lana.");
+            System.out.println("Se han producido " + (g.obtenerCantidadProducto(4)-cantidadTrufaDisponible) + " unidades de Trufa.");
+
     }
 
-    public float[] venderProductos() {
+    public float venderProductos() {
 
         GestionBBDD g = GestionBBDD.getInstance();
-        float[] dinero = new float[nombresProductos.length];
+        float[] dinero = new float[Constantes.CANTIDAD_PRODUCTOS];
+        float total=0;
         ResultSet resultado;
-        int cantidad[] = new int[nombresProductos.length];
+        int cantidad[] = new int[Constantes.CANTIDAD_PRODUCTOS];
         float precio;
 
-        for (int i = 0; i < nombresProductos.length; i++) {
+        for (int i = 1; i <= Constantes.CANTIDAD_PRODUCTOS; i++) {
 
-            cantidad[i] = g.obtenerCantidadAlimento(i);
-            precio = g.obtenerPrecioAlimento(i);
-            dinero[i] = cantidad[i] * precio;
+            cantidad[i-1] = g.obtenerCantidadProducto(i);
+            precio = g.obtenerPrecioProducto(i);
+            dinero[i-1] = cantidad[i-1] * precio;
             g.venderProducto(i);
+            total+=cantidad[i-1]*precio;
 
-            registrarTransaccion(TipoTransaccion.Venta, TipoProducto.PRODUCTO, dinero[i], Timestamp.valueOf(LocalDateTime.now()));
 
         }
+
+        registrarTransaccion(TipoTransaccion.VENTA, TipoProducto.PRODUCTO, total, Timestamp.valueOf(LocalDateTime.now()));
         for (int i = 0; i < dinero.length; i++) {
             System.out.println("Se han vendido " + cantidad[i] + " unidades de " + nombresProductos[i] + " por " + dinero[i] + "€");
         }
 
 
-        return dinero;
+        return total;
     }
 
     public void registrarTransaccion(TipoTransaccion tipoT, TipoProducto tipoP, float cantidad, Timestamp now) {
-        GestionBBDD g = GestionBBDD.getInstance();
-        g.update("INSERT INTO Transacciones(tipo_transaccion,tipo_elemento,precio) values ?,?,?;", tipoT, tipoT, cantidad, now);
+        GestionBBDD.getInstance().registrarTransaccion(tipoT,tipoP,cantidad);
     }
 
-    public void rellenarComedero() {
+    public float rellenarComedero() {
         GestionBBDD g = GestionBBDD.getInstance();
         int cantidadAct = 0;
+        float precio = 0;
+        String[] alimentos = {"Maiz","Avena","Heno"};
 
-        for (int i = 0; i < nombresProductos.length; i++) {
+        for (int i = 1; i <=alimentos.length ; i++) {
 
             cantidadAct = g.obtenerCantidadAlimento(i);
             comprarAlimento(i, cantidadAct);
+            precio+=cantidadAct*g.obtenerPrecioAlimento(i);
+
 
         }
+        return precio;
     }
 
     public void comprarAlimento(int id, int cantidadAct) {
@@ -139,12 +133,12 @@ public class Establo implements Serializable {
             if (precio * cantidadComprar < presupuesto) {
                 Granja.getInstance().setPresupuesto(presupuesto -= precio * cantidadComprar);
                 g.updateCantidadAlimento(Constantes.CANTIDAD_MAX_ALIMENTO,id);
-                System.out.println("Se han comprado " + cantidadComprar + " unidades de " + nombresProductos[id]);
+                System.out.println("Se han comprado " + cantidadComprar + " unidades de " + nombresAlimentos[id-1]);
             } else {
-                System.out.println("No se ha podido comprar " + nombresProductos + " . No nos alcanza el presupuesto.");
+                System.out.println("No se ha podido comprar " + nombresAlimentos[id-1] + " . No nos alcanza el presupuesto.");
             }
         } else {
-            System.out.println("El alimento " + nombresProductos[id] + " se encuentra a capacidad maxima");
+            System.out.println("El alimento " + nombresAlimentos[id-1] + " se encuentra a capacidad maxima");
         }
     }
 

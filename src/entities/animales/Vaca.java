@@ -3,13 +3,14 @@ package entities.animales;
 import BBDD.GestionBBDD;
 import Utils.Constantes;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class Vaca extends Animal {
+public class Vaca extends Animal implements Serializable {
 
     int diasJuego;
 
@@ -30,14 +31,18 @@ public class Vaca extends Animal {
     }
 
     @Override
-    public void producir() {
+    public int producir() {
         int cantidadProducida = 0;
         if (this.getAlimentado()){
 
             cantidadProducida = calcularProduccion();
-            registrarProduccion(this,cantidadProducida,Timestamp.valueOf(LocalDateTime.now()));
-            this.setAlimentado(false);
+            if (cantidadProducida > 0) {
+                registrarProduccion(this, cantidadProducida, Timestamp.valueOf(LocalDateTime.now()));
+                this.setAlimentado(false);
+                almacenar(this.getProducto().getId(), cantidadProducida);
+            }
         }
+        return cantidadProducida;
 
     }
     public int getDiasJuego() {
@@ -76,10 +81,10 @@ public class Vaca extends Animal {
                 System.out.println("No hay suficiente cantidad de alimento disponible.");
                 return false;
             }
-            registrarConsumo(this, Constantes.ALIMENTO_OGC, Timestamp.valueOf(LocalDateTime.now()));
+            registrarConsumo(this, calcularComida(), Timestamp.valueOf(LocalDateTime.now()));
             return true;
         } else {
-            return false;
+            return true;
         }
     }
 

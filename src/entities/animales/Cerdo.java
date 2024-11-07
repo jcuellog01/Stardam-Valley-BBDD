@@ -2,6 +2,7 @@ package entities.animales;
 
 import BBDD.GestionBBDD;
 import Utils.Constantes;
+import entities.Granja;
 import entities.huerto.Estacion;
 
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class Cerdo extends Animal {
+public class Cerdo extends Animal implements Serializable {
 
     public Cerdo() {
         super();
@@ -22,9 +23,30 @@ public class Cerdo extends Animal {
     }
 
     @Override
-    public void producir(){
+    public int producir() {
+        Estacion estacion = Granja.getInstance().getEstacion();
+        int cantidadProducida = 0;
+        if (this.getAlimentado()) {
+            switch (estacion) {
+                case Primavera:
+                case Verano:
+                    cantidadProducida = (int) (Math.random() * 2) + 2;
+                    break;
+                case Otoño:
+                    cantidadProducida = (int) (Math.random() * 2);
+                    break;
+            }
+            if (cantidadProducida > 0) {
+                registrarProduccion(this, cantidadProducida, Timestamp.valueOf(LocalDateTime.now()));
+                this.setAlimentado(false);
+                almacenar(this.getProducto().getId(), cantidadProducida);
+            }
+        }
+
+        return cantidadProducida;
     }
 
+    @Override
     public boolean alimentar() {
         GestionBBDD g = GestionBBDD.getInstance();
         if (!this.getAlimentado()) {
@@ -45,29 +67,10 @@ public class Cerdo extends Animal {
             registrarConsumo(this, Constantes.ALIMENTO_OGC, Timestamp.valueOf(LocalDateTime.now()));
             return true;
         } else {
-            return false;
+            return true;
         }
     }
-
-    public void producir(Estacion estacion) {
-
-        int max = 0;
-        if (this.getAlimentado()) {
-            switch (estacion) {
-                case Primavera:
-                case Verano:
-                    max = (int) (Math.random() * 2) + 2;
-                    break;
-                case Otoño:
-                    max = (int) (Math.random() * 2);
-                    break;
-            }
-            registrarProduccion(this, max, Timestamp.valueOf(LocalDateTime.now()));
-            this.setAlimentado(false);
-        }
-    }
-
-
 
 
 }
+

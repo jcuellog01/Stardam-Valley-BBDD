@@ -29,10 +29,10 @@ public class Granja implements Serializable {
     private int columnasHuerto;
     private Tienda tienda;
     private Almacen almacen;
-    private  ArrayList<Semilla> semillasDisponibles;
-    private  HashMap<Estacion, ArrayList<Semilla>> semillasPorEstacion;
-    private  HashMap<Integer, Semilla> semillasPorId;
-    private  Semilla semillaComprada;
+    private ArrayList<Semilla> semillasDisponibles;
+    private HashMap<Estacion, ArrayList<Semilla>> semillasPorEstacion;
+    private HashMap<Integer, Semilla> semillasPorId;
+    private Semilla semillaComprada;
     private Establo establo;
     private static Granja instance; //si un atributo es estatico, ya es transient por definicion
 
@@ -41,8 +41,8 @@ public class Granja implements Serializable {
         estacion = null;
         duracionEstacion = 0;
         presupuesto = 0;
-        filasHuerto=0;
-        columnasHuerto=0;
+        filasHuerto = 0;
+        columnasHuerto = 0;
         this.tienda = new Tienda();
         this.almacen = new Almacen();
         this.semillaComprada = new Semilla();
@@ -50,17 +50,17 @@ public class Granja implements Serializable {
         this.semillasDisponibles = XML.getSemillas(doc);
         this.semillasPorEstacion = XML.getSemillasEstacion(doc);
         this.semillasPorId = XML.getSemillasId(doc);
-        this.establo=new Establo();
+        this.establo = new Establo();
 
     }
 
-    public void copiarGranja(Granja aux){
+    public void copiarGranja(Granja aux) {
         this.diaActual = aux.diaActual;
         estacion = aux.estacion;
         duracionEstacion = aux.duracionEstacion;
         presupuesto = aux.presupuesto;
-        filasHuerto=aux.filasHuerto;
-        columnasHuerto=aux.columnasHuerto;
+        filasHuerto = aux.filasHuerto;
+        columnasHuerto = aux.columnasHuerto;
         this.tienda = aux.tienda;
         this.almacen = aux.almacen;
         this.semillasDisponibles = aux.semillasDisponibles;
@@ -105,10 +105,12 @@ public class Granja implements Serializable {
                     instance.generarSemillas();
                 }
             }
+
+            this.getEstablo().cargarEstablo();
         }
     }
 
-        public void cargarNueva() {
+    public void cargarNueva() {
 
         this.inicializarHuerto();
         this.generarSemillas();
@@ -229,6 +231,7 @@ public class Granja implements Serializable {
         }
         Guardado.nuevaPartida();
         cargarNueva();
+        this.getEstablo().cargarEstablo();
     }
 
     public static boolean existePartida() {
@@ -251,20 +254,19 @@ public class Granja implements Serializable {
     public void plantarCultivosColumna() {
         int col = Pedir.pedirInt("¿Que columna desea cultivar?");
         col--;
-        if (!isPlantada(col) && col<this.columnasHuerto && col>=0) {
+        if (!isPlantada(col) && col < this.columnasHuerto && col >= 0) {
             this.presupuesto = presupuesto - tienda.vender(semillasDisponibles, presupuesto);
             this.semillaComprada = tienda.getSemillaComprada();
             HuertoDAT.plantarSemillas(this.semillaComprada, col);
             this.semillaComprada = null;
-        }else{
+        } else {
             System.out.println("La columna a plantar no es válida");
         }
     }
 
-    public boolean isPlantada(int col){
+    public boolean isPlantada(int col) {
         return HuertoDAT.isPlantada(col);
     }
-
 
 
     public void venderCosecha() {
@@ -307,23 +309,27 @@ public class Granja implements Serializable {
         this.establo.nuevoDia();
     }
 
-    public void producir(){
+    public void producir() {
         establo.producir();
     }
 
-    public void alimentar(){
+    public void alimentar() {
         establo.alimentar();
     }
 
-    public void venderProductos(){
-        establo.venderProductos();
+    public void venderProductos() {
+        float venta = establo.venderProductos();
+        this.setPresupuesto((int) (getPresupuesto() + venta));
+
     }
 
-    public void rellenarComedero(){
-        establo.rellenarComedero();
+    public void rellenarComedero() {
+        float venta = establo.rellenarComedero();
+        this.setPresupuesto((int) (getPresupuesto() - venta));
+
     }
 
-    public void mostrarAnimales(){
+    public void mostrarAnimales() {
         establo.mostrarAnimales();
     }
 

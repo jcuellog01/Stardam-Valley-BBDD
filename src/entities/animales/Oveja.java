@@ -4,6 +4,7 @@ import BBDD.GestionBBDD;
 import Utils.Constantes;
 import entities.huerto.Tienda;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -12,9 +13,10 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
-public class Oveja extends Animal {
+public class Oveja extends Animal implements Serializable {
 
     private LocalDateTime fechaEsquilado;
+
     public Oveja() {
         super();
         fechaEsquilado = LocalDateTime.now();
@@ -26,7 +28,7 @@ public class Oveja extends Animal {
     }
 
     @Override
-    public void producir() {
+    public int producir() {
         LocalDateTime ahora = LocalDateTime.now();
         int cantidadProducida = 0;
         if (this.getAlimentado()) {
@@ -34,9 +36,13 @@ public class Oveja extends Animal {
                 cantidadProducida = Constantes.PRODUCCION_OVEJAS;
                 fechaEsquilado = ahora;
             }
-            registrarProduccion(this, cantidadProducida, Timestamp.valueOf(ahora));
-            this.setAlimentado(false);
+            if (cantidadProducida > 0) {
+                registrarProduccion(this, cantidadProducida, Timestamp.valueOf(LocalDateTime.now()));
+                this.setAlimentado(false);
+                almacenar(this.getProducto().getId(), cantidadProducida);
+            }
         }
+        return cantidadProducida;
     }
 
     public boolean alimentar() {
@@ -59,9 +65,8 @@ public class Oveja extends Animal {
             registrarConsumo(this, Constantes.ALIMENTO_OGC, Timestamp.valueOf(LocalDateTime.now()));
             return true;
         } else {
-            return false;
+            return true;
         }
     }
-
-    }
+}
 

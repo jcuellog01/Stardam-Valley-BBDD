@@ -1,5 +1,7 @@
 package entities.animales;
 
-public enum TipoTransaccion {
-    Compra,Venta
+import java.io.Serializable;
+
+public enum TipoTransaccion implements Serializable {
+    COMPRA,VENTA
 }

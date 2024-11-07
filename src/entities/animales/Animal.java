@@ -109,21 +109,20 @@ public abstract class Animal implements Serializable {
 
     protected void registrarConsumo(Animal a, int cantidadConsumida, Timestamp now) {
 
-        GestionBBDD.getInstance().update("INSERT INTO HistorialConsumo (id_animal, cantidad_consumida, fecha_consumo) VALUES (?, ?, ?)", this.id, cantidadConsumida, now);
+        GestionBBDD.getInstance().registrarConsumo(a.getId(), cantidadConsumida, now);
 
     }
 
-    public abstract void producir();
+    public abstract int producir();
 
     public void registrarProduccion(Animal animal, int cantidadProducida, Timestamp now) {
-        GestionBBDD.getInstance().update("INSERT INTO HistorialProduccion (id_animal, cantidad_producida, fecha_produccion) VALUES (?, ?, ?)", animal.getId(), cantidadProducida, now);
-
+        GestionBBDD.getInstance().registrarProduccion(animal.getId(), cantidadProducida, now);
     }
 
     public void almacenar(int idProducto, int cantidad) {
         GestionBBDD g = GestionBBDD.getInstance();
-        int cantidadDisponible = g.obtenerCantidadAlimento(id);
-        g.updateCantidadAlimento(cantidad+cantidadDisponible,idProducto);
+        int cantidadDisponible = g.obtenerCantidadProducto(idProducto);
+        g.updateCantidadProducto(cantidad+cantidadDisponible,idProducto);
     }
 
     @Override
