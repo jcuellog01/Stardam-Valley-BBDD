@@ -138,7 +138,7 @@ public abstract class Animal {
         g.update("INSERT INTO HistorialProduccion (id_animal,cantidad_producida,fecha_produccion) values(?,?,?)",animal.getId(),cantidadConsumida,now);
     }
 
-    public abstract void producir();
+    public abstract int producir();
 
     @Override
     public String toString() {

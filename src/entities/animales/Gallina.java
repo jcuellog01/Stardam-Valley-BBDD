@@ -22,17 +22,20 @@ public class Gallina extends Animal {
     }
 
     @Override
-    public void producir(){
+    public int producir() {
 
-        ArrayList<Producto> productos= new ArrayList<>();
-        int resta = Granja.getInstance().getDiaActual()-diaInsercionInt;
         int cantidadProducida = 0;
-        if(resta>Constantes.DIAS_MIN_GALLINAS_NUEVAS && resta <Constantes.DIAS_MAX_GALLINAS_NUEVAS){
+        if(alimentado){
+        int resta = Granja.getInstance().getDiaActual() - diaInsercionInt;
+
+        if (resta > Constantes.DIAS_MIN_GALLINAS_NUEVAS && resta < Constantes.DIAS_MAX_GALLINAS_NUEVAS) {
             cantidadProducida = Constantes.PRODUCCION_GALLINAS_NUEVAS;
-        }else if(resta >Constantes.DIAS_MAX_GALLINAS_NUEVAS ){
+        } else if (resta > Constantes.DIAS_MAX_GALLINAS_NUEVAS) {
             cantidadProducida = Constantes.PRODUCCION_GALLINAS_VIEJAS;
         }
-        registrarProduccion(this,cantidadProducida,Timestamp.valueOf(LocalDateTime.now()));
+        registrarProduccion(this, cantidadProducida, Timestamp.valueOf(LocalDateTime.now()));
+    }
+    return cantidadProducida;
     }
 
     public void setDiaInsercionInt(int diaInsercionInt) {

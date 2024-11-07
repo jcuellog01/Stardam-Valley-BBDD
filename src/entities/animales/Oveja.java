@@ -23,15 +23,18 @@ public class Oveja extends Animal {
     }
 
     @Override
-    public void producir(){
+    public int producir() {
         LocalDateTime ahora = LocalDateTime.now();
         int cantidadProducida = 0;
-        if(ChronoUnit.DAYS.between(fechaEsquilado, ahora) >= 2){
-            cantidadProducida = Constantes.PRODUCCION_OVEJAS;
-            fechaEsquilado = ahora;
+        if (alimentado) {
+            if (ChronoUnit.DAYS.between(fechaEsquilado, ahora) >= 2) {
+                cantidadProducida = Constantes.PRODUCCION_OVEJAS;
+                fechaEsquilado = ahora;
             }
-        registrarProduccion(this,cantidadProducida, Timestamp.valueOf(ahora));
+            registrarProduccion(this, cantidadProducida, Timestamp.valueOf(ahora));
         }
+        return cantidadProducida;
+    }
 
     }
 

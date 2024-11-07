@@ -19,23 +19,27 @@ public class Cerdo extends Animal {
     }
 
     @Override
-    public void producir(){
-        return;
+    public int producir(){
+        return -1;
     }
 
-    public void producir(Estacion estacion){
-        ArrayList<Producto> productos = new ArrayList<>();
+    public int producir(Estacion estacion) {
+
         int max = 0;
-        switch(estacion){
-            case Primavera:
-            case Verano:
-                max = (int)(Math.random()*2)+2;
-                break;
-            case Otoño:
-                max = (int)(Math.random()* 2);
-                break;
+        if (alimentado) {
+            switch (estacion) {
+                case Primavera:
+                case Verano:
+                    max = (int) (Math.random() * 2) + 2;
+                    break;
+                case Otoño:
+                    max = (int) (Math.random() * 2);
+                    break;
+            }
+            registrarProduccion(this, max, Timestamp.valueOf(LocalDateTime.now()));
+
         }
-        registrarProduccion(this,max,Timestamp.valueOf(LocalDateTime.now()));
+        return max;
     }
 
 

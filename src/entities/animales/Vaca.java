@@ -29,14 +29,16 @@ public class Vaca extends Animal {
     }
 
     @Override
-    public void producir() {
-        ArrayList<Producto> producidos = new ArrayList<>();
+    public int producir() {
+        int cantidadProducida = 0;
+        if (alimentado){
 
-        for (int i = 0; i < calcularProduccion(); i++) {
-            producidos.add(this.getProducto());
+            cantidadProducida = calcularProduccion();
+            registrarProduccion(this,cantidadProducida,Timestamp.valueOf(LocalDateTime.now()));
         }
-    }
+        return cantidadProducida;
 
+    }
     public int getDiasJuego() {
         return diasJuego;
     }
