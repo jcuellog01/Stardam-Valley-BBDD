@@ -50,7 +50,7 @@ public class Granja implements Serializable {
         this.semillasDisponibles = XML.getSemillas(doc);
         this.semillasPorEstacion = XML.getSemillasEstacion(doc);
         this.semillasPorId = XML.getSemillasId(doc);
-        this.establo=Establo.getInstance();
+        this.establo=new Establo();
 
     }
 
@@ -94,7 +94,6 @@ public class Granja implements Serializable {
 
     }
 
-
     public void cargarPartida() {
         if (Guardado.existePartida()) {
             // Carga propiedades solo si no se ha cargado previamente
@@ -108,9 +107,6 @@ public class Granja implements Serializable {
             }
         }
     }
-
-
-
 
         public void cargarNueva() {
 

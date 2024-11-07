@@ -1,6 +1,7 @@
 package entities.animales;
 
 import BBDD.GestionBBDD;
+import Utils.Constantes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,21 +21,22 @@ public class Vaca extends Animal {
 
     public Vaca(int id, String nombre, Timestamp diaInsercion, float peso, Alimento alimento, Producto producto) {
         super(id, nombre, diaInsercion, alimento, Tipo.VACA, producto);
-        this.peso = peso;
+        this.setPeso(peso);
         diasJuego = 0;
     }
 
     public int calcularProduccion() {
-        return (int) (peso / 100);
+        return (int) (this.getPeso() / 100);
     }
 
     @Override
     public void producir() {
         int cantidadProducida = 0;
-        if (alimentado){
+        if (this.getAlimentado()){
 
             cantidadProducida = calcularProduccion();
             registrarProduccion(this,cantidadProducida,Timestamp.valueOf(LocalDateTime.now()));
+            this.setAlimentado(false);
         }
 
     }
@@ -47,7 +49,6 @@ public class Vaca extends Animal {
     }
 
     public int calcularComida() {
-
         if (diasJuego < 10) {
             return 1;
         } else if (diasJuego < 40) {
@@ -59,28 +60,25 @@ public class Vaca extends Animal {
 
     @Override
     public boolean alimentar() {
+        GestionBBDD g = GestionBBDD.getInstance();
+        if (!this.getAlimentado()) {
+            int cantidadMax = 0;
 
-        if (!alimentado) {
-            int cantidadMax;
-            int cantidadConsumida = calcularComida();
-            ResultSet resultado = GestionBBDD.getInstance().select("SELECT cantidad_disponible FROM Alimentos al JOIN Animales an ON al.id=an.id_alimento where an.id=?", this.getId());
-            try {
-                cantidadMax = resultado.getInt("cantidad_disponible");
-                if (cantidadMax >= cantidadConsumida) {
-                    alimentado = true;
-                    GestionBBDD gestionBBDD = GestionBBDD.getInstance();
-                    gestionBBDD.update("UPDATE Alimentos SET cantidad_disponible = ? WHERE id = ?", cantidadMax - cantidadConsumida, this.getAlimento().getId());
+            int alimentoId = this.getAlimento().getId();
+            System.out.println("ID de alimento: " + alimentoId);
 
-                }else{
-                    return false;
-                }
-            } catch (SQLException e) {
-                System.out.println("Error al obtener cantidad disponible de un alimento");
+            cantidadMax = g.obtenerCantidadAlimento(this.getAlimento().getId());
+            if (cantidadMax >= calcularComida()) {
+                this.setAlimentado(true);
+                g.updateCantidadAlimento(cantidadMax - calcularComida(), alimentoId);
+
+            } else {
+                System.out.println("No hay suficiente cantidad de alimento disponible.");
+                return false;
             }
-            registrarProduccion(this, cantidadConsumida, Timestamp.valueOf(LocalDateTime.now()));
-            alimentado=false;
+            registrarConsumo(this, Constantes.ALIMENTO_OGC, Timestamp.valueOf(LocalDateTime.now()));
             return true;
-        }else{
+        } else {
             return false;
         }
     }

@@ -9,28 +9,26 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public abstract class Animal implements Serializable {
 
     private int id;
     private String nombre;
     private Timestamp diaInsercion;
-    float peso;
+    private float peso;
     private Tipo tipo;
     private Alimento alimento;
     private Producto producto;
-    boolean alimentado;
+    private boolean alimentado;
 
     public Animal() {
         this.id = -1;
         this.nombre = "";
-        this.tipo=Tipo.GALLINA;
+        this.tipo = Tipo.GALLINA;
         this.diaInsercion = Timestamp.from(Instant.now());
         this.alimento = new Alimento();
         this.producto = new Producto();
-        alimentado = false;
-
+        this.alimentado = false;
     }
 
     public Animal(int id, String nombre, Timestamp diaInsercion, Alimento alimento, Tipo tipo, Producto producto) {
@@ -98,6 +96,7 @@ public abstract class Animal implements Serializable {
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
+
     public boolean getAlimentado() {
         return alimentado;
     }
@@ -106,55 +105,25 @@ public abstract class Animal implements Serializable {
         this.alimentado = alimentado;
     }
 
-    public boolean alimentar() {
+    public abstract boolean alimentar();
 
-        if(!alimentado) {
-            int cantidadMax;
-            int cantidadConsumida = 0;
-            ResultSet resultado = GestionBBDD.getInstance().select("SELECT cantidad_disponible FROM Alimentos al JOIN Animales an ON al.id=an.id_alimento where an.id=?", this.id);
-            try {
-                cantidadMax = resultado.getInt("cantidad_disponible");
-                if (cantidadMax >= Constantes.ALIMENTO_OGC) {
-                    alimentado = true;
-                    GestionBBDD gestionBBDD = GestionBBDD.getInstance();
-                    gestionBBDD.update("UPDATE Alimentos SET cantidad_disponible = ? WHERE id = ?", cantidadMax - Constantes.ALIMENTO_OGC, this.getAlimento().getId());
+    protected void registrarConsumo(Animal a, int cantidadConsumida, Timestamp now) {
 
-                }else{
-                    return false;
-                }
-            } catch (SQLException e) {
-                System.out.println("Error al obtener cantidad disponible de un alimento");
-            }
-
-            registrarConsumo(this, cantidadConsumida, Timestamp.valueOf(LocalDateTime.now()));
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    protected void registrarConsumo(Animal a,int cantidadConsumida,Timestamp now){
-        GestionBBDD g = GestionBBDD.getInstance();
-        g.update("INSERT INTO HistorialConsumo (id_animal,cantidad_consumida,fecha_consumo) values(?,?,?)",this.id,cantidadConsumida,now);
+        GestionBBDD.getInstance().update("INSERT INTO HistorialConsumo (id_animal, cantidad_consumida, fecha_consumo) VALUES (?, ?, ?)", this.id, cantidadConsumida, now);
 
     }
 
     public abstract void producir();
 
-    public void registrarProduccion(Animal animal, int cantidadProducida,Timestamp now){
-        GestionBBDD g = GestionBBDD.getInstance();
-        g.update("INSERT INTO HistorialProduccion (id_animal,cantidad_producida,fecha_produccion) values(?,?,?)",animal.getId(),cantidadProducida,now);
+    public void registrarProduccion(Animal animal, int cantidadProducida, Timestamp now) {
+        GestionBBDD.getInstance().update("INSERT INTO HistorialProduccion (id_animal, cantidad_producida, fecha_produccion) VALUES (?, ?, ?)", animal.getId(), cantidadProducida, now);
 
     }
 
-    public void almacenar(int idProducto, int cantidad){
+    public void almacenar(int idProducto, int cantidad) {
         GestionBBDD g = GestionBBDD.getInstance();
-        try {
-            int cantidadAct = g.select("SELECT cantidad_disponible FROM Productos WHERE id = ?;",idProducto).getInt("cantidad_disponible");
-            g.update("UPDATE Productos SET cantidad_disponible = ? WHERE id = ?;",cantidadAct+cantidad,idProducto);
-        } catch (SQLException e) {
-            System.out.println("Error al almacenar");
-        }
+        int cantidadDisponible = g.obtenerCantidadAlimento(id);
+        g.updateCantidadAlimento(cantidad+cantidadDisponible,idProducto);
     }
 
     @Override
@@ -167,6 +136,7 @@ public abstract class Animal implements Serializable {
                 ", tipo=" + tipo +
                 ", alimento=" + alimento +
                 ", producto=" + producto +
+                ", alimentado=" + alimentado +
                 '}';
     }
 }

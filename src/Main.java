@@ -2,8 +2,6 @@ import Ficheros.Guardado;
 import Utils.Pedir;
 import entities.Granja;
 
-import java.util.Objects;
-
 public class Main {
 
     private static Granja g;
