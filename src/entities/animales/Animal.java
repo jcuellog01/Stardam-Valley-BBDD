@@ -107,22 +107,24 @@ public abstract class Animal {
 
     public void alimentar() {
 
-        int cantidadMax;
-        int cantidadConsumida=0;
-       ResultSet resultado = GestionBBDD.getInstance().select("SELECT cantidad_disponible FROM Alimentos al JOIN Animales an ON al.id=an.id_alimento where an.id=?",this.id);
-        try {
-            cantidadMax = resultado.getInt("cantidad_disponible");
-            if(cantidadMax>= Constantes.ALIMENTO_OGC){
-                alimentado = true;
-                GestionBBDD gestionBBDD = GestionBBDD.getInstance();
-                gestionBBDD.update("UPDATE Alimentos SET cantidad_disponible = ? WHERE id = ?",cantidadMax-Constantes.ALIMENTO_OGC,this.getAlimento().getId());
+        if(!alimentado) {
+            int cantidadMax;
+            int cantidadConsumida = 0;
+            ResultSet resultado = GestionBBDD.getInstance().select("SELECT cantidad_disponible FROM Alimentos al JOIN Animales an ON al.id=an.id_alimento where an.id=?", this.id);
+            try {
+                cantidadMax = resultado.getInt("cantidad_disponible");
+                if (cantidadMax >= Constantes.ALIMENTO_OGC) {
+                    alimentado = true;
+                    GestionBBDD gestionBBDD = GestionBBDD.getInstance();
+                    gestionBBDD.update("UPDATE Alimentos SET cantidad_disponible = ? WHERE id = ?", cantidadMax - Constantes.ALIMENTO_OGC, this.getAlimento().getId());
 
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al obtener cantidad disponible de un alimento");
             }
-        } catch (SQLException e) {
-            System.out.println("Error al obtener cantidad disponible de un alimento");
-        }
 
-        registrarConsumo(this,cantidadConsumida,Timestamp.valueOf(LocalDateTime.now()));
+            registrarConsumo(this, cantidadConsumida, Timestamp.valueOf(LocalDateTime.now()));
+        }
     }
 
     protected void registrarConsumo(Animal a,int cantidadConsumida,Timestamp now){
