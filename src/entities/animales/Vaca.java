@@ -29,14 +29,13 @@ public class Vaca extends Animal {
     }
 
     @Override
-    public int producir() {
+    public void producir() {
         int cantidadProducida = 0;
         if (alimentado){
 
             cantidadProducida = calcularProduccion();
             registrarProduccion(this,cantidadProducida,Timestamp.valueOf(LocalDateTime.now()));
         }
-        return cantidadProducida;
 
     }
     public int getDiasJuego() {
@@ -59,7 +58,7 @@ public class Vaca extends Animal {
     }
 
     @Override
-    public void alimentar() {
+    public boolean alimentar() {
 
         if (!alimentado) {
             int cantidadMax;
@@ -72,14 +71,18 @@ public class Vaca extends Animal {
                     GestionBBDD gestionBBDD = GestionBBDD.getInstance();
                     gestionBBDD.update("UPDATE Alimentos SET cantidad_disponible = ? WHERE id = ?", cantidadMax - cantidadConsumida, this.getAlimento().getId());
 
+                }else{
+                    return false;
                 }
             } catch (SQLException e) {
                 System.out.println("Error al obtener cantidad disponible de un alimento");
             }
             registrarProduccion(this, cantidadConsumida, Timestamp.valueOf(LocalDateTime.now()));
+            alimentado=false;
+            return true;
+        }else{
+            return false;
         }
-
     }
-
 
 }

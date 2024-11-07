@@ -3,6 +3,7 @@ package entities.animales;
 import BBDD.GestionBBDD;
 import Utils.Constantes;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -10,7 +11,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public abstract class Animal {
+public abstract class Animal implements Serializable {
 
     private int id;
     private String nombre;
@@ -105,7 +106,7 @@ public abstract class Animal {
         this.alimentado = alimentado;
     }
 
-    public void alimentar() {
+    public boolean alimentar() {
 
         if(!alimentado) {
             int cantidadMax;
@@ -118,12 +119,17 @@ public abstract class Animal {
                     GestionBBDD gestionBBDD = GestionBBDD.getInstance();
                     gestionBBDD.update("UPDATE Alimentos SET cantidad_disponible = ? WHERE id = ?", cantidadMax - Constantes.ALIMENTO_OGC, this.getAlimento().getId());
 
+                }else{
+                    return false;
                 }
             } catch (SQLException e) {
                 System.out.println("Error al obtener cantidad disponible de un alimento");
             }
 
             registrarConsumo(this, cantidadConsumida, Timestamp.valueOf(LocalDateTime.now()));
+            return true;
+        }else{
+            return false;
         }
     }
 
@@ -133,12 +139,23 @@ public abstract class Animal {
 
     }
 
-    public void registrarProduccion(Animal animal, int cantidadConsumida,Timestamp now){
+    public abstract void producir();
+
+    public void registrarProduccion(Animal animal, int cantidadProducida,Timestamp now){
         GestionBBDD g = GestionBBDD.getInstance();
-        g.update("INSERT INTO HistorialProduccion (id_animal,cantidad_producida,fecha_produccion) values(?,?,?)",animal.getId(),cantidadConsumida,now);
+        g.update("INSERT INTO HistorialProduccion (id_animal,cantidad_producida,fecha_produccion) values(?,?,?)",animal.getId(),cantidadProducida,now);
+
     }
 
-    public abstract int producir();
+    public void almacenar(int idProducto, int cantidad){
+        GestionBBDD g = GestionBBDD.getInstance();
+        try {
+            int cantidadAct = g.select("SELECT cantidad_disponible FROM Productos WHERE id = ?;",idProducto).getInt("cantidad_disponible");
+            g.update("UPDATE Productos SET cantidad_disponible = ? WHERE id = ?;",cantidadAct+cantidad,idProducto);
+        } catch (SQLException e) {
+            System.out.println("Error al almacenar");
+        }
+    }
 
     @Override
     public String toString() {

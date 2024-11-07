@@ -33,7 +33,7 @@ public class Granja implements Serializable {
     private  HashMap<Estacion, ArrayList<Semilla>> semillasPorEstacion;
     private  HashMap<Integer, Semilla> semillasPorId;
     private  Semilla semillaComprada;
-    private Establo e;
+    private Establo establo;
     private static Granja instance; //si un atributo es estatico, ya es transient por definicion
 
     private Granja() {
@@ -50,7 +50,7 @@ public class Granja implements Serializable {
         this.semillasDisponibles = XML.getSemillas(doc);
         this.semillasPorEstacion = XML.getSemillasEstacion(doc);
         this.semillasPorId = XML.getSemillasId(doc);
-        this.e=Establo.getInstance();
+        this.establo=Establo.getInstance();
 
     }
 
@@ -135,7 +135,7 @@ public class Granja implements Serializable {
     }
 
     public Establo getEstablo() {
-        return e;
+        return establo;
     }
 
     public int getColumnasHuerto() {
@@ -288,6 +288,7 @@ public class Granja implements Serializable {
         almacen.mostrarAlmacen(this.semillasPorId);
         System.out.println("- Estado del huerto: ");
         HuertoDAT.mostrarHuerto();
+        mostrarAnimales();
 
     }
 
@@ -307,6 +308,27 @@ public class Granja implements Serializable {
         }
         analizarCultivos();
         this.generarSemillas();
+        this.establo.nuevoDia();
+    }
+
+    public void producir(){
+        establo.producir();
+    }
+
+    public void alimentar(){
+        establo.alimentar();
+    }
+
+    public void venderProductos(){
+        establo.venderProductos();
+    }
+
+    public void rellenarComedero(){
+        establo.rellenarComedero();
+    }
+
+    public void mostrarAnimales(){
+        establo.mostrarAnimales();
     }
 
     @Override

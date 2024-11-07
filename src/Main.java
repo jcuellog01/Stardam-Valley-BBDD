@@ -17,15 +17,32 @@ public class Main {
 
     }
 
-    public static void mostrarMenuPrincipal() {
-        System.out.println("STARDAM VALLEY");
-        System.out.println("--------------------------------");
-        System.out.println("1: INICIAR NUEVO DIA");
-        System.out.println("2: ATENDER CULTIVOS");
-        System.out.println("3: PLANTAR CULTIVOS EN COLUMNA");
-        System.out.println("4: VENDER COSECHA");
-        System.out.println("5: MOSTRAR INFORMACIÓN DE LA GRANJA");
+    public static void mostrarMenuHuerto() {
+
+        System.out.println("1: ATENDER CULTIVOS");
+        System.out.println("2: PLANTAR CULTIVOS EN COLUMNA");
+        System.out.println("3: VENDER COSECHA");
+        System.out.println("4: MOSTRAR INFORMACIÓN DE LA GRANJA");
+        System.out.println("5: SALIR");
+
+    }
+    public static void mostrarMenuEstablos() {
+
+        System.out.println("1: PRODUCIR");
+        System.out.println("2: ALIMENTAR");
+        System.out.println("3: VENDER PRODUCTOS");
+        System.out.println("4: RELLENAR COMEDEROS");
+        System.out.println("5: MOSTRAR ANIMALES");
         System.out.println("6: SALIR");
+
+    }
+
+    public static void mostrarMenuPrincipal() {
+
+        System.out.println("1: INICIAR NUEVO DIA");
+        System.out.println("2: HUERTO");
+        System.out.println("3: ESTABLOS");
+        System.out.println("4: SALIR");
 
     }
 
@@ -52,8 +69,7 @@ public class Main {
         }
     }
 
-    public static void menuPrincipal() {
-
+    public static void menuPrincipal(){
         int opc;
 
         do {
@@ -61,44 +77,109 @@ public class Main {
             mostrarMenuPrincipal();
             opc = Pedir.pedirInt("Introduce tu opcion: ");
             switch (opc) {
+
                 case 1:
-                    //Nuevo día
+                    //Atender cultivos
                     g.nuevoDia();
                     break;
 
                 case 2:
+                    menuHuerto();
+                    break;
+
+                case 3:
+                    menuEstablos();
+                    break;
+
+                case 4:
+
+                    g.mostrarInfo();
+                    break;
+                case 5:
+                    break;
+            }
+        } while (opc != 5);
+        Guardado.guardar(Guardado.getOutput(),g);
+    }
+
+    public static void menuHuerto() {
+
+        int opc;
+
+        do {
+
+            mostrarMenuHuerto();
+            opc = Pedir.pedirInt("Introduce tu opcion: ");
+            switch (opc) {
+
+                case 1:
                     //Atender cultivos
                     g.atenderCultivos();
                     break;
 
-                case 3:
+                case 2:
                     //Plantar cultivos en columna
                     g.plantarCultivosColumna();
                     break;
 
-                case 4:
+                case 3:
                     //Vender cosecha
                     g.venderCosecha();
                     break;
 
-                case 5:
+                case 4:
                     //Mostrar Información de la Granja
                     g.mostrarInfo();
                     break;
-                case 6:
+                case 5:
+                    break;
+            }
+        } while (opc != 5);
+        menuPrincipal();
+
+    }
+
+    public static void menuEstablos() {
+
+        int opc;
+
+        do {
+
+            mostrarMenuEstablos();
+            opc = Pedir.pedirInt("Introduce tu opcion: ");
+            switch (opc) {
+
+                case 1:
+                    //Atender cultivos
+                    g.producir();
+                    break;
+
+                case 2:
+                    //Plantar cultivos en columna
+                    g.alimentar();
+                    break;
+
+                case 3:
+                    //Vender cosecha
+                    g.venderProductos();
+                    break;
+
+                case 4:
+                    //Mostrar Información de la Granja
+                    g.rellenarComedero();
+                    break;
+                case 5:
+                    g.mostrarAnimales();
                     break;
             }
         } while (opc != 6);
+        menuPrincipal();
 
-        Guardado.guardar(Objects.requireNonNull(Guardado.getOutput()), g);
     }
 
     public static void main(String[] args) {
-
-        g = Granja.getInstance();
-        g.getEstablo().cargarEstablo();
-        g.getEstablo().mostrarAnimales();
-        //menuPartida();
+        g=Granja.getInstance();
+        menuPartida();
 
     }
 }

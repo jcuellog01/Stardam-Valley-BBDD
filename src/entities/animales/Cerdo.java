@@ -4,6 +4,7 @@ import BBDD.GestionBBDD;
 import Utils.Constantes;
 import entities.huerto.Estacion;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,11 +20,10 @@ public class Cerdo extends Animal {
     }
 
     @Override
-    public int producir(){
-        return -1;
+    public void producir(){
     }
 
-    public int producir(Estacion estacion) {
+    public void producir(Estacion estacion) {
 
         int max = 0;
         if (alimentado) {
@@ -37,10 +37,11 @@ public class Cerdo extends Animal {
                     break;
             }
             registrarProduccion(this, max, Timestamp.valueOf(LocalDateTime.now()));
-
+            alimentado=false;
         }
-        return max;
     }
+
+
 
 
 }

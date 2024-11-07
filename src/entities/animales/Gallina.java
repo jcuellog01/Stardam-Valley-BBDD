@@ -22,7 +22,7 @@ public class Gallina extends Animal {
     }
 
     @Override
-    public int producir() {
+    public void producir() {
 
         int cantidadProducida = 0;
         if(alimentado){
@@ -34,8 +34,8 @@ public class Gallina extends Animal {
             cantidadProducida = Constantes.PRODUCCION_GALLINAS_VIEJAS;
         }
         registrarProduccion(this, cantidadProducida, Timestamp.valueOf(LocalDateTime.now()));
+        alimentado=false;
     }
-    return cantidadProducida;
     }
 
     public void setDiaInsercionInt(int diaInsercionInt) {

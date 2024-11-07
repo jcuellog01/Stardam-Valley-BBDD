@@ -23,7 +23,7 @@ public class Oveja extends Animal {
     }
 
     @Override
-    public int producir() {
+    public void producir() {
         LocalDateTime ahora = LocalDateTime.now();
         int cantidadProducida = 0;
         if (alimentado) {
@@ -32,8 +32,8 @@ public class Oveja extends Animal {
                 fechaEsquilado = ahora;
             }
             registrarProduccion(this, cantidadProducida, Timestamp.valueOf(ahora));
+            alimentado=false;
         }
-        return cantidadProducida;
     }
 
     }
