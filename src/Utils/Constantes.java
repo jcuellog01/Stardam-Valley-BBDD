@@ -21,5 +21,6 @@ public class Constantes implements Serializable {
     public static final int PRODUCCION_GALLINAS_VIEJAS = 1;
     public static final int DIAS_MIN_GALLINAS_NUEVAS = 3;
     public static final int DIAS_MAX_GALLINAS_NUEVAS = 40;
+    public static final int ALIMENTO_OGC = 1;
 
 }

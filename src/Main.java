@@ -98,8 +98,6 @@ public class Main {
         g = Granja.getInstance();
         g.getEstablo().cargarEstablo();
         g.getEstablo().mostrarAnimales();
-        g.getEstablo().mostrarAlimentos();
-        g.getEstablo().mostrarProductos();
         //menuPartida();
 
     }

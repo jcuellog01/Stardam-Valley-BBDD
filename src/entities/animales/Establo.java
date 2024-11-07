@@ -19,11 +19,12 @@ public class Establo {
 
         g.cerrarConexion();
 
-
     }
 
     public void alimentar(){
-
+        for (Animal a : animales) {
+            a.alimentar();
+        }
     }
 
     public static Establo getInstance() {
@@ -35,27 +36,8 @@ public class Establo {
 
     public void cargarAnimales(GestionBBDD g) {
 
-        this.animales.addAll(g.getAnimales(g.select("SELECT * FROM Animales;")));
+        this.animales.addAll(g.getAnimales(g.select("SELECT * FROM Animales an JOIN Alimentos al ON an.id_alimento=al.id JOIN Productos p ON an.id_producto=p.id;")));
 
-    }
-
-    public Alimento getAlimentoId(int id){
-        Alimento alimento = g.;
-        for(Alimento a: this.alimentos){
-            if(a.getId() == id){
-                return a;
-            }
-        }
-        return null;
-    }
-
-    public Producto getProductoId(int id){
-        for(Producto p: this.productos){
-            if(p.getId() == id){
-                return p;
-            }
-        }
-        return null;
     }
 
     public void mostrarAnimales(){
@@ -69,25 +51,4 @@ public class Establo {
         System.out.println(" ");
     }
 
-    public void mostrarAlimentos(){
-        System.out.println("ALIMENTOS");
-        System.out.println("------------------------------------------------------");
-        for(Alimento a: this.alimentos){
-            System.out.println(a.toString());
-        }
-
-        System.out.println("------------------------------------------------------");
-        System.out.println(" ");
-    }
-
-    public void mostrarProductos(){
-        System.out.println("PRODUCTOS");
-        System.out.println("------------------------------------------------------");
-        for(Producto p: this.productos){
-            System.out.println(p.toString());
-        }
-
-        System.out.println("------------------------------------------------------");
-        System.out.println(" ");
-    }
 }

@@ -1,7 +1,13 @@
 package entities.animales;
 
+import BBDD.GestionBBDD;
+import Utils.Constantes;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public abstract class Animal {
@@ -100,7 +106,29 @@ public abstract class Animal {
     }
 
     public void alimentar() {
-        this.alimentado = true;
+
+        int cantidadMax;
+        int cantidadConsumida=0;
+       ResultSet resultado = GestionBBDD.getInstance().select("SELECT cantidad_disponible FROM Alimentos al JOIN Animales an ON al.id=an.id_alimento where an.id=?",this.id);
+        try {
+            cantidadMax = resultado.getInt("cantidad_disponible");
+            if(cantidadMax>= Constantes.ALIMENTO_OGC){
+                alimentado = true;
+                GestionBBDD gestionBBDD = GestionBBDD.getInstance();
+                gestionBBDD.update("UPDATE Alimentos SET cantidad_disponible = ? WHERE id = ?",cantidadMax-Constantes.ALIMENTO_OGC,this.getAlimento().getId());
+
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener cantidad disponible de un alimento");
+        }
+
+        registrarConsumo(this,cantidadConsumida,Timestamp.valueOf(LocalDateTime.now()));
+    }
+
+    protected void registrarConsumo(Animal a,int cantidadConsumida,Timestamp now){
+        GestionBBDD g = GestionBBDD.getInstance();
+        g.update("INSERT INTO HistorialConsumo (id_animal,cantidad_consumida,fecha_consumo) values(?,?,?)",this.id,cantidadConsumida,now);
+
     }
 
     public abstract ArrayList<Producto> producir();
